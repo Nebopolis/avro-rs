@@ -22,29 +22,28 @@ enum Type<'a> {
   Fixed(Fixed<'a>)
 }
 
-
 struct Field<'a> {
-  name: &'static str,
-  doc: Option<String>,
+  name: &'a str,
+  doc: Option<&'a str>,
   av_type: Type<'a>,
-  default: &'static str,
+  default: &'a str,
   order: Option<Order>
 }
 
 struct Record<'a> {
-    name: &'static str,
-    namespace: Option<String>,
-    doc: Option<String>,
-    aliases: Option<&'a[String]>,
+    name: &'a str,
+    namespace: Option<&'a str>,
+    doc: Option<&'a str>,
+    aliases: Option<&'a[&'a str]>,
     fields: &'a[Field<'a>]
 }
 
 struct Enum<'a> {
-    name: &'static str,
-    namespace: Option<String>,
-    doc: Option<String>,
-    aliases: Option<&'a[String]>,
-    symbols: &'a[String]
+    name: &'a str,
+    namespace: Option<&'a str>,
+    doc: Option<&'a str>,
+    aliases: Option<&'a[&'a str]>,
+    symbols: &'a[&'a str]
 }
 
 struct Array<'a> {
@@ -52,19 +51,70 @@ struct Array<'a> {
 }
 
 struct Map<'a> {
-  values: &'a[String]
+  values: &'a[&'a str]
 }
 
 struct Fixed<'a> {
-  name: &'static str,
-  namespace: Option<String>,
-  aliases: Option<&'a[String]>,
+  name: &'a str,
+  namespace: Option<&'a str>,
+  aliases: Option<&'a[&'a str]>,
   size: i32
 }
 
 trait Valid {
   fn valid(&self) -> bool;
 }
+
+trait ToType {
+  fn to_type(&self) -> Type;
+}
+
+impl <'a>ToType for &'a str {
+  fn to_type(&self) -> Type {
+    return Type::Null;
+  }
+}
+
+impl <'a>Valid for Field<'a> {
+  fn valid(&self) -> bool {
+    match &self.av_type {
+      _ => false
+    }
+  }
+}
+
+impl <'a>Valid for Record<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+impl <'a>Valid for Enum<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+
+impl <'a>Valid for Array<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+impl <'a>Valid for Map<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+impl <'a>Valid for Fixed<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+
 
 #[test]
 #[should_panic]
