@@ -62,6 +62,10 @@ struct Fixed<'a> {
   size: i32
 }
 
+trait Valid {
+  fn valid(&self) -> bool;
+}
+
 #[test]
 #[should_panic]
 fn it_works() {
