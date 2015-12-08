@@ -1,3 +1,6 @@
+use std::str::FromStr;
+use std::error::Error;
+use std::fmt;
 
 enum Order {
   Ascending,
@@ -22,29 +25,28 @@ enum Type<'a> {
   Fixed(Fixed<'a>)
 }
 
-
 struct Field<'a> {
-  name: &'static str,
-  doc: Option<String>,
+  name: &'a str,
+  doc: Option<&'a str>,
   av_type: Type<'a>,
-  default: &'static str,
+  default: &'a str,
   order: Option<Order>
 }
 
 struct Record<'a> {
-    name: &'static str,
-    namespace: Option<String>,
-    doc: Option<String>,
-    aliases: Option<&'a[String]>,
+    name: &'a str,
+    namespace: Option<&'a str>,
+    doc: Option<&'a str>,
+    aliases: Option<&'a[&'a str]>,
     fields: &'a[Field<'a>]
 }
 
 struct Enum<'a> {
-    name: &'static str,
-    namespace: Option<String>,
-    doc: Option<String>,
-    aliases: Option<&'a[String]>,
-    symbols: &'a[String]
+    name: &'a str,
+    namespace: Option<&'a str>,
+    doc: Option<&'a str>,
+    aliases: Option<&'a[&'a str]>,
+    symbols: &'a[&'a str]
 }
 
 struct Array<'a> {
@@ -52,15 +54,104 @@ struct Array<'a> {
 }
 
 struct Map<'a> {
-  values: &'a[String]
+  values: &'a[&'a str]
 }
 
 struct Fixed<'a> {
-  name: &'static str,
-  namespace: Option<String>,
-  aliases: Option<&'a[String]>,
+  name: &'a str,
+  namespace: Option<&'a str>,
+  aliases: Option<&'a[&'a str]>,
   size: i32
 }
+
+trait Valid {
+  fn valid(&self) -> bool;
+}
+
+// trait ToType {
+//   fn to_type(&self) -> Option<Type>;
+// }
+
+// impl <'a>ToType for &'a str {
+//   fn to_type(&self) -> Option<Type> {
+//     match &self.as_ref() {
+//       "null" => Type::Null,
+//       _     => Type::Null
+
+//     }
+//   }
+// }
+
+struct ParseTypeError<'a> {
+  cause: Option<&'a Error>
+}
+
+impl <'a>fmt::Debug for ParseTypeError<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "hi")
+    }
+}
+
+impl <'a> fmt::Display for ParseTypeError<'a> {
+      fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "hi")
+    }
+}
+
+impl <'a>Error for ParseTypeError<'a> {
+
+  fn description(&self) -> &str {
+    "hi"
+  }
+}
+
+impl <'a>FromStr for Type<'a> {
+  type Err = ParseTypeError<'a>;
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    Ok(Type::Null)
+  }
+}
+
+impl <'a>Valid for Field<'a> {
+  fn valid(&self) -> bool {
+    match &self.av_type {
+      _ => false
+    }
+  }
+}
+
+impl <'a>Valid for Record<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+impl <'a>Valid for Enum<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+
+impl <'a>Valid for Array<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+impl <'a>Valid for Map<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+impl <'a>Valid for Fixed<'a> {
+  fn valid(&self) -> bool {
+    return true;
+  }
+}
+
+
 
 #[test]
 #[should_panic]
