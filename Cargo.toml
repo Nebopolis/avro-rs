@@ -3,10 +3,7 @@ name = "avro"
 version = "0.1.0"
 authors = ["Ben Evans <bevans@zendesk.com>"]
 
-[build-dependencies]
-serde_codegen = "*"
-syntex = "*"
-
 [dependencies]
 serde = "*"
 serde_json = "*"
+serde_macros = "*"
