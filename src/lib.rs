@@ -63,7 +63,45 @@ mod schema {
    "name",
    "doc",
    "order",
-  "type",];
+  "type"];
+struct Message {
+  doc: Option<String>,
+  request: Vec<Field>,
+  response: Type,
+  errors: Option<Vec<Type>>,
+  one_way: Option<bool>
+}
+struct Field {
+  name: String,
+  doc: Option<String>,
+  default: String,
+  order: Option<Sort>
+}
+struct Record {
+    name: String,
+    namespace: Option<String>,
+    doc: Option<String>,
+    aliases: Option<Vec<String>>,
+    fields: Vec<Field>
+}
+struct Enum {
+    name: String,
+    namespace: Option<String>,
+    doc: Option<String>,
+    aliases: Option<Vec<String>>,
+    symbols: Vec<String>
+}
+struct Array {
+  items: Box<Type>
+}
+struct Fixed {
+  name: String,
+  namespace: Option<String>,
+  aliases: Option<Vec<String>>,
+  size: i32
+}
+
+
 }
 
 #[test]
