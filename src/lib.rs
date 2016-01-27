@@ -30,36 +30,15 @@ mod schema {
   }
 
   enum Named {
-    Fixed {
-      name: String,
-      namespace: Option<String>,
-      aliases: Option<Vec<String>>,
-      size: i32
-    },
-    Enum {
-      name: String,
-      namespace: Option<String>,
-      doc: Option<String>,
-      aliases: Option<Vec<String>>,
-      symbols: Vec<String>
-    },
-    Record {
-      name: String,
-      namespace: Option<String>,
-      doc: Option<String>,
-      aliases: Option<Vec<String>>,
-      fields: Vec<Field>
-    },
+    Fixed(Fixed),
+    Enum(Enum),
+    Record(Record),
     Error(Error)
   }
 
   enum Complex {
-    Array {
-     items: Box<Type>
-    },
-    Map {
-      values: Vec<String>
-    },
+    Array(Array),
+    Map(Vec<String>),
     Union(Vec<Type>),
     Request(Vec<Field>),
     ErrorUnion(Vec<Error>)
@@ -116,19 +95,19 @@ mod schema {
       fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error>
           where S: serde::Serializer
       {
-          serializer.visit_struct("fixed", FixedMapVisitor {
+          serializer.visit_struct("fixed", MapVisitor::<Fixed> {
               value: self,
               state: 0,
           })
       }
   }
 
-  struct FixedMapVisitor<'a> {
-      value: &'a Fixed,
+  struct MapVisitor<'a, T: 'a> {
+      value: &'a T,
       state: u8,
   }
 
-  impl<'a> serde::ser::MapVisitor for FixedMapVisitor<'a> {
+  impl<'a> serde::ser::MapVisitor for MapVisitor<'a, Fixed> {
       fn visit<S>(&mut self, serializer: &mut S) -> Result<Option<()>, S::Error>
           where S: serde::Serializer
       {
@@ -158,8 +137,7 @@ mod schema {
 }
 
 #[test]
-#[should_panic]
-fn it_works() {
+fn serialize_fixed() {
   let a = schema::Fixed {
     name: "hello".to_string(),
     namespace: None,
@@ -168,6 +146,6 @@ fn it_works() {
   };
 
   let serialized = serde_json::to_string(&a).unwrap();
-  println!("{:?}", serialized);
+  assert_eq!("{\"name\":\"hello\",\"namespace\":null,\"aliases\":null,\"size\":8}", serialized);
 
 }
