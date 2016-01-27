@@ -57,27 +57,27 @@ mod schema {
   }
 
   struct Message {
-    doc: Option<String>,
-    request: Vec<Field>,
-    response: Type,
-    errors: Option<Vec<Type>>,
-    one_way: Option<bool>
+  doc: Option<String>,
+  request: Vec<Field>,
+  response: Type,
+  errors: Option<Vec<Type>>,
+  one_way: Option<bool>
   }
 
   struct Record {
-      name: String,
-      namespace: Option<String>,
-      doc: Option<String>,
-      aliases: Option<Vec<String>>,
-      fields: Vec<Field>
+    name: String,
+    namespace: Option<String>,
+    doc: Option<String>,
+    aliases: Option<Vec<String>>,
+    fields: Vec<Field>
   }
 
   struct Enum {
-      name: String,
-      namespace: Option<String>,
-      doc: Option<String>,
-      aliases: Option<Vec<String>>,
-      symbols: Vec<String>
+    name: String,
+    namespace: Option<String>,
+    doc: Option<String>,
+    aliases: Option<Vec<String>>,
+    symbols: Vec<String>
   }
 
   struct Array {
@@ -92,47 +92,47 @@ mod schema {
   }
 
   impl serde::Serialize for Fixed {
-      fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error>
-          where S: serde::Serializer
-      {
-          serializer.visit_struct("fixed", MapVisitor::<Fixed> {
-              value: self,
-              state: 0,
-          })
-      }
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error>
+      where S: serde::Serializer
+    {
+      serializer.visit_struct("fixed", MapVisitor::<Fixed> {
+        value: self,
+        state: 0,
+      })
+    }
   }
 
   struct MapVisitor<'a, T: 'a> {
-      value: &'a T,
-      state: u8,
+    value: &'a T,
+    state: u8,
   }
 
   impl<'a> serde::ser::MapVisitor for MapVisitor<'a, Fixed> {
       fn visit<S>(&mut self, serializer: &mut S) -> Result<Option<()>, S::Error>
-          where S: serde::Serializer
+        where S: serde::Serializer
       {
-          match self.state {
-              0 => {
-                  self.state += 1;
-                  Ok(Some(try!(serializer.visit_struct_elt("name", &self.value.name))))
-              }
-              1 => {
-                  self.state += 1;
-                  Ok(Some(try!(serializer.visit_struct_elt("namespace", &self.value.namespace))))
-              },
-              2 => {
-                  self.state += 1;
-                  Ok(Some(try!(serializer.visit_struct_elt("aliases", &self.value.aliases))))
-              },
-              3 => {
-                  self.state += 1;
-                  Ok(Some(try!(serializer.visit_struct_elt("size", &self.value.size))))
-              },
-              _ => {
-                  Ok(None)
-              }
-          }
+      match self.state {
+        0 => {
+          self.state += 1;
+          Ok(Some(try!(serializer.visit_struct_elt("name", &self.value.name))))
+        }
+        1 => {
+          self.state += 1;
+          Ok(Some(try!(serializer.visit_struct_elt("namespace", &self.value.namespace))))
+        },
+        2 => {
+          self.state += 1;
+          Ok(Some(try!(serializer.visit_struct_elt("aliases", &self.value.aliases))))
+        },
+        3 => {
+          self.state += 1;
+          Ok(Some(try!(serializer.visit_struct_elt("size", &self.value.size))))
+        },
+        _ => {
+          Ok(None)
+        }
       }
+    }
   }
 }
 
